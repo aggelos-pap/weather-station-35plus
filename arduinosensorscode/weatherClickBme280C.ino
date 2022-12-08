@@ -1,31 +1,82 @@
- /****************************************************************************************************/
- /* Returns temperature in DegC, resolution is 0.01 DegC. Output value of “5123” equals 51.23 DegC.  */
- /***************************************************************************************************/
- 
- static long BME280_Compensate_T() {
-   long temp1, temp2, T;
- 
-  temp1 = ((((adc_T>>3) -((long)cal_param.dig_T1<<1))) * ((long)cal_param.dig_T2)) >> 11;
-   temp2 = (((((adc_T>>4) - ((long)cal_param.dig_T1)) * ((adc_T>>4) - ((long)cal_param.dig_T1))) >> 12) * ((long)cal_param.dig_T3)) >> 14;
-   t_fine = temp1 + temp2;
-   T = (t_fine * 5 + 128) >> 8;
-   return T;
- }
- 
- /************************************************************************************************************/
- /* Returns humidity in %RH as unsigned 32 bit integer in Q22.10 format (22 integer and 10 fractional bits). */
- /* Output value of “47445” represents 47445/1024 = 46.333 %RH */
- /************************************************************************************************************/
+// https://www.instructables.com/Arduino-Easy-Weather-Station-With-BME280-Sensor/
 
- static unsigned long BME280_Compensate_H() {
-   long h1;
-   h1 = (t_fine - ((long)76800));
-   h1 = (((((adc_H << 14) - (((long)cal_param.dig_H4) << 20) - (((long)cal_param.dig_H5) * h1)) +
-     ((long)16384)) >> 15) * (((((((h1 * ((long)cal_param.dig_H6)) >> 10) * (((h1 *
-     ((long)cal_param.dig_H3)) >> 11) + ((long)32768))) >> 10) + ((long)2097152)) *
-     ((long)cal_param.dig_H2) + 8192) >> 14));
-   h1 = (h1 - (((((h1 >> 15) * (h1 >> 15)) >> 7) * ((long)cal_param.dig_H1)) >> 4));
-   h1 = (h1 < 0 ? 0 : h1);
-   h1 = (h1 > 419430400 ? 419430400 : h1);
-   return (unsigned long)(h1>>12);
- }
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BME280.h>
+#include <LiquidCrystal.h>
+
+float temperature;
+float humidity;
+float pressure;
+
+#define ALTITUDE 216.0 // Altitude in Sparta, Greece
+
+Adafruit_BME280 bme; // I2C
+
+LiquidCrystal lcd(8,9,4,5,6,7); 
+
+void setup(void) {
+
+  lcd.begin(16, 2);
+  lcd.print("Reading sensor");
+
+  bool status;
+    
+    // default settings
+    status = bme.begin(0x76);  //The I2C address of the sensor I use is 0x76
+    if (!status) {
+        lcd.clear();
+        lcd.print("Error. Check");
+        lcd.setCursor(0,1);
+        lcd.print("connections");
+        while (1);
+    }
+}
+
+void loop() {
+  
+ delay(2000);
+
+ getPressure();
+ getHumidity();
+ getTemperature();
+ 
+ lcd.clear(); 
+ 
+ //Printing Temperature
+ String temperatureString = String(temperature,1);
+ lcd.print("T:"); 
+ lcd.print(temperatureString);
+ lcd.print((char)223);
+ lcd.print("C ");
+ 
+ //Printing Humidity
+ String humidityString = String(humidity,0); 
+ lcd.print("H: ");
+ lcd.print(humidityString);
+ lcd.print("%");
+ 
+ //Printing Pressure
+ lcd.setCursor(0,1);
+ lcd.print("P: ");
+ String pressureString = String(pressure,2);
+ lcd.print(pressureString);
+ lcd.print(" hPa");
+}
+
+float getTemperature()
+{
+  temperature = bme.readTemperature();
+}
+
+float getHumidity()
+{
+  humidity = bme.readHumidity();
+}
+
+float getPressure()
+{
+  pressure = bme.readPressure();
+  pressure = bme.seaLevelForAltitude(ALTITUDE,pressure);
+  pressure = pressure/100.0F;
+}
+
