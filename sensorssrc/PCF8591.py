@@ -27,7 +27,7 @@ bus = smbus.SMBus(1)
 
 def setup(Addr):
     global address
-    address = 'i2c@7e804000'
+    address = 'i2c@7e805000'
 
 
 def read(chn):  # channel
