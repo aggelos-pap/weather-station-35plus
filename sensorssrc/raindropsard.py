@@ -1,10 +1,10 @@
-import adafruit_pcf8591.pcf8591 as ADC
-# import PCF8591 as ADC
+# import adafruit_pcf8591.pcf8591 as ADC
+import PCF8591 as ADC
 import RPi.GPIO as GPIO
 import time
 import math
 
-DO = 17
+DO = 18
 GPIO.setmode(GPIO.BCM)
 
 
