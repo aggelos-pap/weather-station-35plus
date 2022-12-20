@@ -1,5 +1,5 @@
 import RPi.GPIO as GPIO
-
+import time
 # Set up the GPIO pin for the sensor
 rain_pin = 18
 # GPIO.setmode(GPIO.BCM)
@@ -8,6 +8,19 @@ GPIO.setup(rain_pin, GPIO.IN)
 
 # Read the moisture level from the sensor
 rain_level = GPIO.input(rain_pin)
+pulse_start = 0
+pulse_end = 0
+while True:
+    if GPIO.input(rain_pin) == 1:
+        pulse_start = time.time()
+    elif GPIO.input(rain_pin) == 0:
+        pulse_end = time.time()
+        break
+
+# Calculate the rain level using the duty cycle of the PWM signal
+duty_cycle = (pulse_end - pulse_start) / 20
+rain_level = duty_cycle * 100
+print("Rain level:", rain_level, "%")
 
 # Print the moisture level to the console
 while True:
