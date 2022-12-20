@@ -57,6 +57,8 @@ GPIO.setmode(GPIO.BCM)
 # Set the GPIO pin for the rain sensor as an input
 rain_sensor_pin = 18
 GPIO.setup(rain_sensor_pin, GPIO.IN)
+led_pin = 17
+GPIO.setup(led_pin, GPIO.OUT)
 
 # Initialize a variable to store the rain level
 rain_level = 0
@@ -67,8 +69,10 @@ while True:
     rain_sensor_state = GPIO.input(rain_sensor_pin)
 
     # If the rain sensor is triggered (i.e., it is raining), increase the rain level by 1
-    if rain_sensor_state == 1:
+    if rain_sensor_state == 0:
         rain_level += 1
+    else:
+        GPIO.output(led_pin, False)
 
     # Print the current rain level
     print("Rain level:", rain_level)
