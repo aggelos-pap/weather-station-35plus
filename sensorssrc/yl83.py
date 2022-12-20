@@ -1,16 +1,17 @@
 import RPi.GPIO as GPIO
 
 # Set up the GPIO pin for the sensor
-moisture_pin = 18
+rain_pin = 18
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(moisture_pin, GPIO.IN)
+GPIO.setup(rain_pin, GPIO.IN)
 
 # Read the moisture level from the sensor
-moisture_level = GPIO.input(moisture_pin)
+moisture_level = GPIO.input(rain_pin)
 
 # Print the moisture level to the console
 while True:
-    print("Moisture level:", moisture_level)
+    print("Rain level:", rain_level)
+    GPIO.cleanup()
 
 # Clean up the GPIO
-GPIO.cleanup()
+# GPIO.cleanup()
