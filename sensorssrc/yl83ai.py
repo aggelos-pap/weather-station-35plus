@@ -14,10 +14,10 @@ rain_level = GPIO.input(rain_pin)
 rain_threshold = 50
 
 # Check if it is raining based on the rain level
-if rain_level > rain_threshold:
-    print("It is raining.")
-else:
-    print("It is not raining.")
+# if rain_level > rain_threshold:
+#     print("It is raining.")
+# else:
+#     print("It is not raining.")
 
 # rain %
 pulse_start = 0
@@ -45,6 +45,7 @@ while True:
         fun = str(rain_level)
         print(f'Its not raining and the level is { fun} ')
         GPIO.cleanup()
+GPIO.cleanup()
 
 # Clean up the GPIO
 # GPIO.cleanup()
