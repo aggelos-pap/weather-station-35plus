@@ -1,7 +1,7 @@
 import RPi.GPIO as GPIO
 
 # Set up the GPIO pin for the sensor
-rain_pin = 17
+rain_pin = 19
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(rain_pin, GPIO.IN)
 
