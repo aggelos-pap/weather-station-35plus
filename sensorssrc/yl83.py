@@ -11,7 +11,7 @@ rain_level = GPIO.input(rain_pin)
 
 # Print the moisture level to the console
 while True:
-    if (rain_level) == 1:
+    if (rain_level) == True:
         fun = str(rain_level)
         print(f'Its raining and the level is { fun}')
         GPIO.cleanup()
