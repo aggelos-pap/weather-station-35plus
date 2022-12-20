@@ -9,7 +9,8 @@ GPIO.setup(moisture_pin, GPIO.IN)
 moisture_level = GPIO.input(moisture_pin)
 
 # Print the moisture level to the console
-print("Moisture level:", moisture_level)
+while True:
+    print("Moisture level:", moisture_level)
 
 # Clean up the GPIO
 GPIO.cleanup()
