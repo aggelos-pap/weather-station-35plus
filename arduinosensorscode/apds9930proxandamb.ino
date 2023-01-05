@@ -1,66 +1,35 @@
-/*
-APDS-9930-Proximity-And-Ambient-Light
-modified on 02 Nov 2020
-by Amir Mohammad Shojaee @ Electropeak
-Home
-
-Based on Github.com Library Example
-*/
-
-#define DUMP_REGS
-
 #include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_ST7735.h>
 #include <APDS9930.h>
 
-// Global Variables
-APDS9930 apds = APDS9930();
-float ambient_light = 0; // can also be an unsigned long
+Adafruit_ST7735 tft = Adafruit_ST7735(10, 9, 8);
+APDS9930 proximitySensor;
 
 void setup()
 {
-
-    // Initialize Serial port
-    Serial.begin(9600);
-    Serial.println();
-
-    // Initialize APDS-9930 (configure I2C and initial values)
-    if (apds.init())
-    {
-        Serial.println(F("APDS-9930 initialization complete"));
-    }
-    else
-    {
-        Serial.println(F("Something went wrong during APDS-9930 init!"));
-    }
-
-    // Start running the APDS-9930 light sensor (no interrupts)
-    if (apds.enableLightSensor(false))
-    {
-        Serial.println(F("Light sensor is now running"));
-    }
-    else
-    {
-        Serial.println(F("Something went wrong during light sensor init!"));
-    }
-
-    // Wait for initialization and calibration to finish
-    delay(500);
+    tft.initR(INITR_BLACKTAB);
+    tft.fillScreen(ST7735_BLACK);
+    Wire.begin();
+    proximitySensor.begin();
 }
 
 void loop()
 {
-
-    // Read the light levels (ambient, red, green, blue)
-    if (!apds.readAmbientLightLux(ambient_light))
-    {
-        Serial.println(F("Error reading light values"));
+    // Measure distance with APDS9930 proximity sensor
+    float distance = proximitySensor.getDistance();
+    if (distance < 200)
+    { // Increase screen brightness if object is closer than 2 meters
+        tft.setBrightness(255);
     }
     else
     {
-        Serial.print(F("Ambient: "));
-        Serial.println(ambient_light);
+        tft.setBrightness(128);
     }
 
-    // Wait 1 second before next reading
+    // Display distance on Adafruit 1.54 TFT screen
+    tft.setCursor(0, 0);
+    tft.setTextSize(1);
+    tft.println("Distance: " + String(distance) + " cm");
     delay(1000);
 }
