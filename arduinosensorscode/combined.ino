@@ -1,12 +1,16 @@
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_ST7735.h>
+#include <Adafruit_ST7789.h>
 #include <Adafruit_BME280.h>
 #include <Sharp_GP2Y1014AU.h>
 #include <APDS9930.h>
 #include <Raindrops.h>
+#include <WiFi.h>
 
-Adafruit_ST7735 tft = Adafruit_ST7735(10, 9, 8);
+const char *ssid = "YOUR_SSID";
+const char *password = "YOUR_PASSWORD";
+Adafruit_ST7735 tft = Adafruit_ST7735(10, 9, 8); // ST7789
 Adafruit_BME280 bme;
 Sharp_GP2Y1014AU dustSensor;
 APDS9930 proximitySensor;
@@ -21,10 +25,23 @@ void setup()
     dustSensor.begin();
     proximitySensor.begin();
     rainSensor.begin();
+
+    Serial.begin(115200);
+    WiFi.begin(ssid, password);
+
+    while (WiFi.status() != WL_CONNECTED)
+    {
+        delay(500);
+        Serial.println("Connecting to WiFi..");
+    }
+
+    Serial.println("Connected to the WiFi network");
+}
 }
 
 void loop()
 {
+    //
     // Measure temperature, pressure, and humidity with BME280 sensor
     float temperature = bme.readTemperature();
     float pressure = bme.readPressure();
